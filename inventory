@@ -7,3 +7,6 @@
 
 [db_servers]
 192.168.2.61
+
+[workstations]
+192.168.2.28
