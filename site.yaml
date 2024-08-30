@@ -45,6 +45,13 @@
          - php
       state: latest
     when: ansible_distribution == "Rocky"
+ 
+  - name: start httpd (Rocky)
+    tags: apache,rocky,httpd
+    service:
+      name: httpd
+      state: started
+    when: ansible_distribution == "Rocky" 
 
   - name: install apache and php for Ubuntu servers
     tags: apache,apache2,ubuntu
@@ -54,6 +61,22 @@
          - libapache2-mod-php
       state: latest
     when: ansible_distribution == "Ubuntu"
+
+  - name: change e-mail address for admin
+    tags: apache,rocky,httpd
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin somebody@somewhere.net
+    when: ansible_distribution == "Rocky"
+    register: httpd
+
+  - name: restart httpd (Rocky)
+    tags: apache,rocky,httpd
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed
 
   - name: copy default html file for test site
     tags: apache,apache2,httpd
