@@ -1,0 +1,45 @@
+---
+
+- hosts: all
+  become: true
+  pre_tasks:
+   
+   - name: install updates (Rocky)
+     tags: always
+     dnf:
+       update_only: yes
+       update_cache: yes
+     when: ansible_distribution == "Rocky"
+
+   - name: install updates (Ubuntu)
+     tags: always
+     apt:
+       upgrade: dist
+       update_cache: yes
+     when: ansible_distribution == "Ubuntu"
+
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: create and admin Ansible user
+    tags: always
+    user:
+      name: admin
+      groups: root
+
+  - name: add ssh key for admin user
+    tags: always
+    authorized_key:
+      user: admin
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDC2V/hNnHLPJuxW1NQHmLXJeHcJfEX/DeMA3yKF2VzC ansible" 
+
+  - name: add sudoers file for admin
+    tags: always
+    copy:
+      src: sudoer_admin
+      dest: /etc/sudoers.d/admin
+      owner: root
+      group: root
+      mode: 0440

@@ -1,24 +1,35 @@
 ---
 
 - hosts: all
+  become: true
   pre_tasks:
    
-   - name: install updates (Rocky)
+   - name: Update repo cache (Rocky)
      tags: always
      dnf:
-       update_only: yes
        update_cache: yes
+     changed_when: false
      when: ansible_distribution == "Rocky"
 
-   - name: install updates (Ubuntu)
+   - name: Update repo cache (Ubuntu)
      tags: always
      apt:
-       upgrade: dist
        update_cache: yes
+     changed_when: false
      when: ansible_distribution == "Ubuntu"
 
 
+- hosts: all
+  tasks:
+
+  - name: add ssh key for admin user
+    tags: always
+    authorized_key:
+      user: admin
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDC2V/hNnHLPJuxW1NQHmLXJeHcJfEX/DeMA3yKF2VzC ansible" 
+
 - hosts: workstations
+  become: true
   tasks:
   
   - name: install unzip
@@ -34,7 +45,9 @@
      owner: root
      group: root
 
+
 - hosts: web_servers
+  become: true
   tasks:
  
   - name: install apache and php for Rocky Linux servers
@@ -87,7 +100,9 @@
       group: root
       mode: 0644
 
+
 - hosts: db_servers
+  become: true
   tasks:
   
   - name: install mariabdb package (Rocky)
@@ -104,7 +119,9 @@
       state: latest
     when: ansible_distribution == "Ubuntu"
 
+
 - hosts: file_servers
+  become: true
   tasks:
 
   - name: install samba package
