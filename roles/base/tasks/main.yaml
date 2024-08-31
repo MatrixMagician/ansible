@@ -3,3 +3,12 @@
     user: admin
     key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDC2V/hNnHLPJuxW1NQHmLXJeHcJfEX/DeMA3yKF2VzC ansible"
 
+- name: generate sshd_config file from a template
+  tags: ssh
+  template:
+    src: "{{ ssh_template_file }}"
+    dest: /etc/ssh/sshd_config
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart_sshd
